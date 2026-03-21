@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 import Sidebar from "./Sidebar";
-import { faHome, faList, faCog } from "@fortawesome/free-solid-svg-icons";
+import { faHome, faList, faCog, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 export default function Navbar() {
     const [showSidebar, setShowSidebar] = useState(false);
@@ -10,6 +10,7 @@ export default function Navbar() {
     const links = [
         { name: "Home", path: "/", icon: faHome },
         { name: "Recipes", path: "/recipes", icon: faList },
+        { name: "Add Recipe", path: "/add-recipe", icon: faPlus },
         { name: "Settings", path: "/settings", icon: faCog }
     ];
 

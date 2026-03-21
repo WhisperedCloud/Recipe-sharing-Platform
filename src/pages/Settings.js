@@ -4,7 +4,12 @@ import { faCheck } from "@fortawesome/free-solid-svg-icons"
 import { useState, useEffect } from "react"
 
 export default function Settings(){
-    const [settings, setSettings] = useState({
+    const getInitialState = (key, defaultVal) => {
+        const saved = localStorage.getItem(key);
+        return saved ? JSON.parse(saved) : defaultVal;
+    };
+
+    const [settings, setSettings] = useState(() => getInitialState("appSettings", {
         "--background-color": "#fff",
         "--background-light": "#fff",
         "--primary-color": "rgb(255, 0, 86)",
@@ -13,15 +18,25 @@ export default function Settings(){
         "--text-light": "#575757",
         "--font-size": "16px",
         "--animation-speed": 1
-    })
-    useEffect(() => {
-        const root = document.documentElement
-        for(let key in settings){
-            root.style.setProperty(key, settings[key])
-        }
-    }, [settings])
+    }));
 
-    const [theme, setTheme] = useState("light")
+    const [theme, setTheme] = useState(() => getInitialState("appTheme", "light"));
+    const [primaryColor, setPrimaryColor] = useState(() => getInitialState("appPrimaryColor", 0));
+    const [fontSize, setFontSize] = useState(() => getInitialState("appFontSize", 1));
+    const [animationSpeed, setAnimationSpeed] = useState(() => getInitialState("appAnimationSpeed", 1));
+
+    useEffect(() => {
+        const root = document.documentElement;
+        for(let key in settings){
+            root.style.setProperty(key, settings[key]);
+        }
+        localStorage.setItem("appSettings", JSON.stringify(settings));
+        localStorage.setItem("appTheme", JSON.stringify(theme));
+        localStorage.setItem("appPrimaryColor", JSON.stringify(primaryColor));
+        localStorage.setItem("appFontSize", JSON.stringify(fontSize));
+        localStorage.setItem("appAnimationSpeed", JSON.stringify(animationSpeed));
+    }, [settings, theme, primaryColor, fontSize, animationSpeed]);
+
     const themes = [
         {
             "--background-color": "#fff",
@@ -37,43 +52,7 @@ export default function Settings(){
             "--text-color": "#ffffff",
             "--text-light": "#eceaea",
         }
-    ]
-
-    function changeTheme(i){
-        const _theme = {...themes[i]}
-        setTheme(i === 0 ? "light" : "dark")
-        let _settings = {...settings}
-        for(let key in _theme){
-            _settings[key] = _theme[key]
-        }
-        setSettings(_settings)
-    }
-
-    function changeColor(i){
-        const _color = primaryColors[i]
-        let _settings = {...settings}
-        _settings["--primary-color"] = _color
-        setPrimaryColor(i)
-        setSettings(_settings) 
-    }
-
-    function changeFontSize(i){
-        const _size = fontSizes[i]
-        let _settings = {...settings}
-        _settings["--font-size"] = _size.value
-        setFontSize(i)
-        setSettings(_settings)
-    }
-
-    function changeAnimationSpeed(i){
-        let _speed = animationSpeeds[i]
-        let _settings = {...settings}
-        _settings["--animation-speed"] = _speed.value
-        setAnimationSpeed(i)
-        setSettings(_settings)
-    }
-
-
+    ];
 
     const primaryColors = [
         "rgb(255, 0, 86)",
@@ -81,38 +60,53 @@ export default function Settings(){
         "rgb(255, 193, 7)",
         "rgb(0, 200, 83)",
         "rgb(156, 39, 176)"
-    ]
+    ];
+
     const fontSizes = [
-        {
-            title: "Small",
-            value: "12px"
-        },
-        {
-            title: "Medium",
-            value: "16px"
-        },
-        {
-            title: "Large",
-            value: "20px"
-        }
-    ]
+        { title: "Small", value: "12px" },
+        { title: "Medium", value: "16px" },
+        { title: "Large", value: "20px" }
+    ];
+
     const animationSpeeds = [
-        {
-              title: "Slow",
-              value: 2
-        },
-        {
-              title: "Medium",
-              value: 1
-        },
-        {
-              title: "Fast",
-              value: .5
+        { title: "Slow", value: 2 },
+        { title: "Medium", value: 1 },
+        { title: "Fast", value: .5 }
+    ];
+
+    function changeTheme(i){
+        const _theme = {...themes[i]};
+        setTheme(i === 0 ? "light" : "dark");
+        let _settings = {...settings};
+        for(let key in _theme){
+            _settings[key] = _theme[key];
         }
-    ]
-    const [primaryColor, setPrimaryColor] = useState(0)
-    const [fontSize, setFontSize] = useState(1)
-    const [animationSpeed, setAnimationSpeed] = useState(1)
+        setSettings(_settings);
+    }
+
+    function changeColor(i){
+        const _color = primaryColors[i];
+        let _settings = {...settings};
+        _settings["--primary-color"] = _color;
+        setPrimaryColor(i);
+        setSettings(_settings);
+    }
+
+    function changeFontSize(i){
+        const _size = fontSizes[i];
+        let _settings = {...settings};
+        _settings["--font-size"] = _size.value;
+        setFontSize(i);
+        setSettings(_settings);
+    }
+
+    function changeAnimationSpeed(i){
+        let _speed = animationSpeeds[i];
+        let _settings = {...settings};
+        _settings["--animation-speed"] = _speed.value;
+        setAnimationSpeed(i);
+        setSettings(_settings);
+    }
     return (
         <div>
             <div className="section d-block">

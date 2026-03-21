@@ -13,7 +13,7 @@ export default function ImproveSkills(){
     return(
         <div className="section improve-skills">
             <div className="col img">
-               <img src="/images/gallery/img_10 11.30.23 AM.jpg"></img>
+               <img src="/images/gallery/img_10 11.30.23 AM.jpg" alt="Improve your cooking skills"></img>
             </div>
             <div className="col typography">
                 <h1 className="title">Improve your cooking skills</h1>  
