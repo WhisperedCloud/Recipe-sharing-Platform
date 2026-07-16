@@ -1,71 +1,89 @@
-# Getting Started with Create React App
+# 🍽️ Foodiespace - AI-Powered Recipe Platform
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Welcome to **Foodiespace**, a full-stack, responsive web application that leverages the power of Artificial Intelligence to dynamically generate and share beautiful recipes!
 
-## Available Scripts
+## ✨ Features
+* **🤖 AI Recipe Generation**: Powered by the hyper-fast **Groq AI (Llama 3)**, simply type what you're craving (e.g., "Spicy Garlic Pasta") and the AI will write a complete, structured recipe for you in seconds.
+* **📸 Dynamic AI Photography**: Uses **Pollinations AI** to dynamically generate high-quality, professional food photography perfectly matching the generated recipe's title.
+* **📱 Fully Responsive Design**: A beautiful, premium UI built with custom SCSS that looks stunning on desktops, tablets, and mobile devices.
+* **☁️ Cloud Database**: Recipes, authors (Chefs), and metadata are securely stored in a cloud **PostgreSQL** database.
 
-In the project directory, you can run:
+## 🛠️ Tech Stack
+* **Frontend**: React.js, React Router, SCSS (Deployed on **Vercel**)
+* **Backend**: Node.js, Express.js, Sequelize ORM, JWT Authentication (Deployed on **Render**)
+* **Database**: PostgreSQL (Hosted on **Render**)
+* **AI Integrations**: Groq Cloud API, Pollinations AI Image Generation
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🚀 Live Demo
+* **Frontend UI**: [https://foodiespace.vercel.app](https://foodiespace.vercel.app)
+* **Backend API**: [https://recipe-sharing-platform-k1dx.onrender.com](https://recipe-sharing-platform-k1dx.onrender.com)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## 💻 Local Development Setup
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+If you want to run this project locally, follow these steps:
 
-### `npm run build`
+### 1. Clone the Repository
+```bash
+git clone https://github.com/WhisperedCloud/Recipe-sharing-Platform.git
+cd Recipe-sharing-Platform
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 2. Setup the Backend
+Open a terminal and navigate to the backend folder:
+```bash
+cd backend
+npm install
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Create a `.env` file in the `backend/` directory and add the following:
+```env
+PORT=5001
+DB_NAME=recipe_db
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_HOST=localhost
+JWT_SECRET=your_super_secret_jwt_key
+GROK_API_KEY=your_groq_api_key_here
+```
+*(Make sure you have PostgreSQL installed and running locally, or replace the DB credentials with a cloud database).*
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Start the backend server:
+```bash
+npm start
+```
 
-### `npm run eject`
+### 3. Setup the Frontend
+Open a *new* terminal and navigate to the root folder:
+```bash
+npm install
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Start the React frontend:
+```bash
+npm start
+```
+The application will open in your browser at `http://localhost:3000`.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 🌍 Environment Variables (Production)
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+If deploying to production (like Vercel and Render), ensure you set the following environment variables in your respective dashboards:
 
-## Learn More
+**Frontend (Vercel)**
+* `REACT_APP_API_URL` = `https://your-backend-url.onrender.com`
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+**Backend (Render)**
+* `DB_HOST` = `your_render_internal_db_host`
+* `DB_NAME` = `your_render_db_name`
+* `DB_USER` = `your_render_db_user`
+* `DB_PASSWORD` = `your_render_db_password`
+* `JWT_SECRET` = `a_secure_random_string`
+* `GROK_API_KEY` = `your_groq_api_key`
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-# Recipe-sharing-Platform
+---
+*Built with ❤️ and AI.*
