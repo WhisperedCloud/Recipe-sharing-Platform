@@ -5,6 +5,7 @@ export default function RecipeDetails() {
     const { id } = useParams();
     const [recipe, setRecipe] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [imageLoaded, setImageLoaded] = useState(false);
 
     useEffect(() => {
         // Fetch the full recipe by its ID
@@ -27,16 +28,24 @@ export default function RecipeDetails() {
     if (!recipe) return <h2 style={{textAlign: "center", padding: "50px"}}>Recipe Not Found</h2>;
 
     return (
-        <div className="recipe-details-container" style={{ padding: "2em", maxWidth: "800px", margin: "0 auto" }}>
+        <div className="recipe-details-container">
             <Link to="/recipes" className="view-btn" style={{ marginBottom: "20px", display: "inline-block", textDecoration: "none" }}>&larr; Back to Recipes</Link>
             
-            <img 
-                src={recipe.image} 
-                alt={recipe.title} 
-                style={{ width: "100%", height: "400px", objectFit: "cover", borderRadius: "10px", marginTop: "20px" }} 
-            />
+            <div className="recipe-image-container">
+                {!imageLoaded && (
+                    <div className="skeleton-loader">
+                        <span>✨ Generating stunning AI image...</span>
+                    </div>
+                )}
+                <img 
+                    src={recipe.image} 
+                    alt={recipe.title} 
+                    onLoad={() => setImageLoaded(true)}
+                    style={{ opacity: imageLoaded ? 1 : 0, transition: "opacity 0.5s ease-in-out" }} 
+                />
+            </div>
             
-            <h1 style={{ marginTop: "20px", color: "var(--primary-color, #ff0056)" }}>{recipe.title}</h1>
+            <h1>{recipe.title}</h1>
             
             <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "15px 0" }}>
                 <img 

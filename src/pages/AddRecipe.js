@@ -18,6 +18,9 @@ export default function AddRecipe() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
+    const [aiPrompt, setAiPrompt] = useState("");
+    const [aiLoading, setAiLoading] = useState(false);
+
     // Fetch chefs on load
     useEffect(() => {
         fetch("http://localhost:5001/api/users")
@@ -31,6 +34,68 @@ export default function AddRecipe() {
 
     const handleChange = (e) => {
         setFormData({...formData, [e.target.name]: e.target.value});
+    };
+
+    const handleGenerate = async () => {
+        if (!aiPrompt) {
+            setError("Please enter a prompt for Groq AI.");
+            return;
+        }
+        
+        setAiLoading(true);
+        setError("");
+
+        try {
+            // Step 1: Login silently as the selected chef to get their JWT token
+            const loginRes = await fetch("http://localhost:5001/api/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: selectedChefEmail, password: "password123" }) 
+            });
+
+            const loginData = await loginRes.json();
+            
+            if (!loginRes.ok) {
+                throw new Error("Unable to authenticate chef. Did you run the seed script?");
+            }
+
+            const token = loginData.token;
+
+            // Call generate endpoint
+            const generateRes = await fetch("http://localhost:5001/api/recipes/generate", {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ prompt: aiPrompt })
+            });
+
+            if (!generateRes.ok) {
+                const errData = await generateRes.json();
+                throw new Error(errData.message || "Failed to generate recipe");
+            }
+
+            const data = await generateRes.json();
+            
+            // Populate form
+            setFormData(prev => ({
+                ...prev,
+                title: data.title || prev.title,
+                description: data.description || prev.description,
+                ingredients: data.ingredients || prev.ingredients,
+                instructions: data.instructions || prev.instructions,
+                cookingTime: data.cookingTime ? data.cookingTime.toString() : prev.cookingTime,
+            }));
+
+            // Clear prompt
+            setAiPrompt("");
+
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setAiLoading(false);
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -59,8 +124,8 @@ export default function AddRecipe() {
                 ...formData,
                 cookingTime: parseInt(formData.cookingTime),
                 ingredients: formData.ingredients.split(',').map(i => i.trim()).filter(i => i),
-                // use a placeholder image if none provided
-                image: formData.image || "/images/gallery/img_4 11.30.22 AM.jpg" 
+                // Ultra-fast placeholder image service
+                image: formData.image || `https://loremflickr.com/800/600/food,meal?random=${Math.random()}`
             };
 
             const recipeRes = await fetch("http://localhost:5001/api/recipes", {
@@ -89,22 +154,45 @@ export default function AddRecipe() {
 
     return (
         <div className="section" style={{ display: "flex", justifyContent: "center", padding: "2em" }}>
-            <div style={{
-                background: "#fff", padding: "2em", borderRadius: "10px", 
-                boxShadow: "0 10px 30px rgba(0,0,0,0.1)", width: "100%", maxWidth: "600px"
-            }}>
+            <div className="add-recipe-container">
                 <h2 style={{ marginBottom: "1em", color: "var(--primary-color, #ff0056)" }}>Create a New Recipe</h2>
                 
                 {error && <div style={{ background: "#ffebee", color: "#c62828", padding: "10px", borderRadius: "5px", marginBottom: "15px" }}>{error}</div>}
 
-                <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+                <form onSubmit={handleSubmit} className="add-recipe-form">
                     
-                    <div style={{ display: "flex", flexDirection: "column" }}>
-                        <label style={{ fontWeight: "bold", marginBottom: "5px" }}>Choose the Author (Chef)</label>
+                    {/* AI Generation Section */}
+                    <div className="ai-generation-box">
+                        <label style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>✨ Generate with Groq AI</label>
+                        <div className="ai-input-group">
+                            <input 
+                                type="text" value={aiPrompt} onChange={(e) => setAiPrompt(e.target.value)}
+                                style={{ flex: 1, padding: "10px", borderRadius: "5px", border: "1px solid #ddd", fontSize: "16px", outline: "none", width: "100%" }} 
+                                placeholder="E.g., 'Vegan gluten-free brownies' or 'Spicy Mexican chicken'" 
+                            />
+                            <button 
+                                type="button" 
+                                onClick={handleGenerate}
+                                disabled={aiLoading || !selectedChefEmail}
+                                style={{
+                                    padding: "10px 15px", background: "#333", color: "white", 
+                                    border: "none", borderRadius: "5px", fontSize: "16px", cursor: (aiLoading || !selectedChefEmail) ? "not-allowed" : "pointer",
+                                    opacity: (aiLoading || !selectedChefEmail) ? 0.7 : 1
+                                }}
+                            >
+                                {aiLoading ? "Generating..." : "Generate"}
+                            </button>
+                        </div>
+                        <small style={{ color: "#666", marginTop: "5px", display: "inline-block" }}>
+                            Describe a recipe and AI will auto-fill the form fields below.
+                        </small>
+                    </div>
+                    
+                    <div className="form-group">
+                        <label>Choose the Author (Chef)</label>
                         <select 
                             value={selectedChefEmail} 
                             onChange={(e) => setSelectedChefEmail(e.target.value)}
-                            style={{ padding: "10px", borderRadius: "5px", border: "1px solid #ddd", fontSize: "16px", outline: "none" }}
                         >
                             {chefs.map(chef => (
                                 <option key={chef.id} value={chef.email}>{chef.name}</option>
@@ -112,56 +200,52 @@ export default function AddRecipe() {
                         </select>
                     </div>
 
-                    <div style={{ display: "flex", flexDirection: "column" }}>
-                        <label style={{ fontWeight: "bold", marginBottom: "5px" }}>Recipe Title</label>
+                    <div className="form-group">
+                        <label>Recipe Title</label>
                         <input 
                             name="title" value={formData.title} onChange={handleChange} required
-                            style={{ padding: "10px", borderRadius: "5px", border: "1px solid #ddd", fontSize: "16px", outline: "none" }} 
                             placeholder="E.g., Spicy Garlic Pasta" 
                         />
                     </div>
 
-                    <div style={{ display: "flex", flexDirection: "column" }}>
-                        <label style={{ fontWeight: "bold", marginBottom: "5px" }}>Brief Description</label>
+                    <div className="form-group">
+                        <label>Brief Description</label>
                         <textarea 
                             name="description" value={formData.description} onChange={handleChange} required
-                            style={{ padding: "10px", borderRadius: "5px", border: "1px solid #ddd", fontSize: "16px", outline: "none", minHeight: "80px" }} 
+                            style={{ minHeight: "80px" }} 
                             placeholder="Briefly describe the recipe..." 
                         />
                     </div>
 
-                    <div style={{ display: "flex", flexDirection: "column" }}>
-                        <label style={{ fontWeight: "bold", marginBottom: "5px" }}>Ingredients</label>
+                    <div className="form-group">
+                        <label>Ingredients</label>
                         <input 
                             name="ingredients" value={formData.ingredients} onChange={handleChange} required
-                            style={{ padding: "10px", borderRadius: "5px", border: "1px solid #ddd", fontSize: "16px", outline: "none" }} 
                             placeholder="Comma separated (e.g. Pasta, Garlic, Olive Oil)" 
                         />
                     </div>
 
-                    <div style={{ display: "flex", flexDirection: "column" }}>
-                        <label style={{ fontWeight: "bold", marginBottom: "5px" }}>Cooking Instructions</label>
+                    <div className="form-group">
+                        <label>Cooking Instructions</label>
                         <textarea 
                             name="instructions" value={formData.instructions} onChange={handleChange} required
-                            style={{ padding: "10px", borderRadius: "5px", border: "1px solid #ddd", fontSize: "16px", outline: "none", minHeight: "120px" }} 
+                            style={{ minHeight: "120px" }} 
                             placeholder="Step 1... Step 2..." 
                         />
                     </div>
 
-                    <div style={{ display: "flex", gap: "15px" }}>
-                        <div style={{ display: "flex", flexDirection: "column", flex: "1" }}>
-                            <label style={{ fontWeight: "bold", marginBottom: "5px" }}>Cooking Time (mins)</label>
+                    <div className="form-row">
+                        <div className="form-group">
+                            <label>Cooking Time (mins)</label>
                             <input 
                                 type="number" name="cookingTime" value={formData.cookingTime} onChange={handleChange} required min="1"
-                                style={{ padding: "10px", borderRadius: "5px", border: "1px solid #ddd", fontSize: "16px", outline: "none" }} 
                                 placeholder="30" 
                             />
                         </div>
-                        <div style={{ display: "flex", flexDirection: "column", flex: "1" }}>
-                            <label style={{ fontWeight: "bold", marginBottom: "5px" }}>Image URL (optional)</label>
+                        <div className="form-group">
+                            <label>Image URL (optional)</label>
                             <input 
                                 type="text" name="image" value={formData.image} onChange={handleChange}
-                                style={{ padding: "10px", borderRadius: "5px", border: "1px solid #ddd", fontSize: "16px", outline: "none" }} 
                                 placeholder="/images/..." 
                             />
                         </div>
