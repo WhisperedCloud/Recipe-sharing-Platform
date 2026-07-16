@@ -21,7 +21,18 @@ const app = express();
 
 // Middlewares
 app.use(express.json()); // Body parser
-app.use(cors({ origin: 'http://localhost:3000', credentials: true })); // Explicitly allow frontend
+
+const allowedOrigins = ['http://localhost:3000', 'https://foodiespace.vercel.app'];
+app.use(cors({ 
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }, 
+  credentials: true 
+})); // Explicitly allow frontend
 
 // Database Connection
 connectDB();

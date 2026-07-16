@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { API_URL } from "../config";
 
 export default function RecipeDetails() {
     const { id } = useParams();
@@ -9,7 +10,7 @@ export default function RecipeDetails() {
 
     useEffect(() => {
         // Fetch the full recipe by its ID
-        fetch(`http://localhost:5001/api/recipes/${id}`)
+        fetch(`${API_URL}/api/recipes/${id}`)
             .then(res => {
                 if (!res.ok) throw new Error("Failed to fetch");
                 return res.json();

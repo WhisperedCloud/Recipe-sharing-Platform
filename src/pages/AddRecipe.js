@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config";
 
 export default function AddRecipe() {
     const [chefs, setChefs] = useState([]);
@@ -23,7 +24,7 @@ export default function AddRecipe() {
 
     // Fetch chefs on load
     useEffect(() => {
-        fetch("http://localhost:5001/api/users")
+        fetch(`${API_URL}/api/users`)
             .then(res => res.json())
             .then(data => {
                 setChefs(data);
@@ -47,7 +48,7 @@ export default function AddRecipe() {
 
         try {
             // Step 1: Login silently as the selected chef to get their JWT token
-            const loginRes = await fetch("http://localhost:5001/api/auth/login", {
+            const loginRes = await fetch(`${API_URL}/api/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email: selectedChefEmail, password: "password123" }) 
@@ -62,7 +63,7 @@ export default function AddRecipe() {
             const token = loginData.token;
 
             // Call generate endpoint
-            const generateRes = await fetch("http://localhost:5001/api/recipes/generate", {
+            const generateRes = await fetch(`${API_URL}/api/recipes/generate`, {
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json",
@@ -105,7 +106,7 @@ export default function AddRecipe() {
 
         try {
             // Step 1: Login silently as the selected chef to get their JWT token
-            const loginRes = await fetch("http://localhost:5001/api/auth/login", {
+            const loginRes = await fetch(`${API_URL}/api/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email: selectedChefEmail, password: "password123" }) 
@@ -128,7 +129,7 @@ export default function AddRecipe() {
                 image: formData.image || `https://loremflickr.com/800/600/food,meal?random=${Math.random()}`
             };
 
-            const recipeRes = await fetch("http://localhost:5001/api/recipes", {
+            const recipeRes = await fetch(`${API_URL}/api/recipes`, {
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json",

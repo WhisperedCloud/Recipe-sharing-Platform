@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import PreviousSearches from "../components/PreviousSearches"
 import RecipeCard from "../components/RecipeCard"
 import Pagination from "../components/Pagination"
+import { API_URL } from "../config";
 
 export default function Recipes(){
     const [recipes, setRecipes] = useState([])
@@ -19,7 +20,7 @@ export default function Recipes(){
     }, [searchQuery]);
 
     useEffect(() => {
-        fetch("http://localhost:5001/api/recipes")
+        fetch(`${API_URL}/api/recipes`)
             .then(res => res.json())
             .then(data => {
                 const formattedRecipes = data.map(r => ({
@@ -56,13 +57,13 @@ export default function Recipes(){
 
         try {
             // Fetch chefs to get a valid email for autologin
-            const usersRes = await fetch("http://localhost:5001/api/users");
+            const usersRes = await fetch(`${API_URL}/api/users`);
             const users = await usersRes.json();
             if (users.length === 0) throw new Error("No users found to author the recipe.");
             const authorEmail = users[0].email;
 
             // Step 1: Login silently
-            const loginRes = await fetch("http://localhost:5001/api/auth/login", {
+            const loginRes = await fetch(`${API_URL}/api/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email: authorEmail, password: "password123" }) 
@@ -72,7 +73,7 @@ export default function Recipes(){
             const token = loginData.token;
 
             // Step 2: Generate Recipe via AI
-            const generateRes = await fetch("http://localhost:5001/api/recipes/generate", {
+            const generateRes = await fetch(`${API_URL}/api/recipes/generate`, {
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json",
@@ -97,7 +98,7 @@ export default function Recipes(){
                 image: `https://loremflickr.com/800/600/food,meal?random=${Math.random()}`
             };
 
-            const saveRes = await fetch("http://localhost:5001/api/recipes", {
+            const saveRes = await fetch(`${API_URL}/api/recipes`, {
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json",
