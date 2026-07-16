@@ -23,6 +23,13 @@ const app = express();
 app.use(express.json()); // Body parser
 
 const allowedOrigins = ['http://localhost:3000', 'https://foodiespace.vercel.app'];
+
+// Support Private Network Access (so Vercel can fetch from localhost for local testing)
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Private-Network", "true");
+  next();
+});
+
 app.use(cors({ 
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
