@@ -125,8 +125,8 @@ export default function AddRecipe() {
                 ...formData,
                 cookingTime: parseInt(formData.cookingTime),
                 ingredients: formData.ingredients.split(',').map(i => i.trim()).filter(i => i),
-                // Ultra-fast placeholder image service
-                image: formData.image || `https://loremflickr.com/800/600/food,meal?random=${Math.random()}`
+                // If no image is uploaded, dynamically generate a perfect AI image based on the recipe title!
+                image: formData.image || `https://image.pollinations.ai/prompt/${encodeURIComponent(formData.title + " delicious food, professional food photography, highly detailed")}?width=800&height=600&nologo=true`
             };
 
             const recipeRes = await fetch(`${API_URL}/api/recipes`, {

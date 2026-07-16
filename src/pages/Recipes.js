@@ -94,8 +94,8 @@ export default function Recipes(){
                                 : (aiData.ingredients || []),
                 instructions: aiData.instructions || "Just cook it!",
                 cookingTime: parseInt(aiData.cookingTime) || 30,
-                // Ultra-fast placeholder image service
-                image: `https://loremflickr.com/800/600/food,meal?random=${Math.random()}`
+                // Ultra-fast placeholder image service using AI generation for accurate matching
+                image: `https://image.pollinations.ai/prompt/${encodeURIComponent(searchQuery + " delicious food, professional food photography, highly detailed")}?width=800&height=600&nologo=true`
             };
 
             const saveRes = await fetch(`${API_URL}/api/recipes`, {
